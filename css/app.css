@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+.app {
+  font-family: "Roboto", sans-serif;
+  display: grid;
+  grid-template-rows: 80px 1fr 80px;
+  min-height: 100vh;
+}
+.app header {
+  background: #FFFFFF;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  grid-row: 1/2;
+  z-index: 3;
+}
+.app header img {
+  width: 75px;
+  object-fit: cover;
+}
+.app header ion-icon {
+  color: #000000;
+  font-size: 45px;
+}
+.app main {
+  grid-row: 2/3;
+  background: #F3F3F3;
+  z-index: 2;
+  padding-top: 20px;
+}
+.app main ul {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.app main ul li {
+  font-size: 14px;
+  border-radius: 2px;
+  color: #000;
+  padding: 15px 10px;
+  line-height: 20px;
+}
+.app main ul li .time {
+  color: #AAAAAA;
+  color-vertical-align: middle;
+}
+.app main ul li .bold {
+  font-weight: 700;
+}
+.app main ul li.message {
+  background: #FFFFFF;
+}
+.app main ul li.alert {
+  background: #DCDCDC;
+}
+.app main ul li.private-message {
+  background: #FFDEDE;
+}
+.app footer {
+  grid-row: 3/4;
+  display: grid;
+  padding: 10px 20px;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  background: #FFFFFF;
+  box-shadow: 0px -4px 6px rgba(0, 0, 0, 0.05);
+  z-index: 3;
+}
+.app footer input {
+  border-color: transparent;
+  color: #000000;
+  font-weight: 400;
+  font-size: 18px;
+  height: 30px;
+  outline-color: transparent;
+}
+.app footer input::placeholder {
+  color: #000000;
+  font-style: italic;
+}
+.app footer button {
+  background: transparent;
+  border-color: transparent;
+}
+.app footer button ion-icon {
+  font-size: 26px;
+  color: #000;
+}
