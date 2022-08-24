@@ -6,59 +6,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PROJETO #5 - CHAT UOL</title>
     <link rel="stylesheet" href="css/reset.css">
-    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    
+<body>   
     <div class="app">
-
-        <header>
-            <img src="./assets/logo 1.png">
-            <ion-icon name="people"></ion-icon>
-        </header>
-
-        <main>
-              <ul>
-                <li class="alert">
-                    <span class="time">(09:21:45)</span>
-                    <span class="bold">João</span>
-                    <span class="text">entra na sala...</span>
-                </li>
-                <li class="message">
-                    <span class="time">(09:21:45)</span>
-                    <span class="identifier">
-                        <span class="bold">Maria</span>
-                        para
-                        <span class="bold">João</span>:   
-                    </span>
-                    <span class="text">Bom dia</span>
-                </li>
-                <li class="private-message">
-                    <span class="time">(09:21:45)</span>
-                    <span class="identifier">
-                        <span class="bold">João</span>
-                        reservadamente para
-                        <span class="bold">Maria</span>:   
-                    </span>
-                    <span class="text">Oi gatinha quer tc?</span>
-                </li>
-                <li class="alert">
-                    <span class="time">(09:21:45)</span>
-                    <span class="bold">Maria</span>
-                    <span class="text">sai da sala...</span>
-                </li>
-              </ul>
-        </main>
-
-        <footer> 
-            <input type="text" placeholder="Escreva aqui...">
-            <button>
-                <ion-icon name="paper-plane-outline"></ion-icon>
-            </button>
-        </footer>
-
+        <div class="auth hide">
+            <img src="./assets/logo.png">
+            <form method="post" id="form-auth">
+                <input type="text" placeholder="Digite seu nome">
+                <button type="submit">
+                    Entrar
+                </button>
+            </form>
+        </div>
+        <div class="home">
+            <header>
+                <img src="./assets/logo.png">
+                <ion-icon name="people"></ion-icon>
+            </header>
+            <main>
+                <ul class="messages" id="messages">
+                    <li class="message status">
+                        <span class="date">(09:21:45)</span>
+                        <span>
+                            <b>João</b>                            
+                        </span>
+                        <span class="text">entra na sala...</span>
+                    </li>
+                    <li class="message">
+                        <span class="date">(09:21:45)</span>
+                        <span>
+                            <b>João</b>
+                            para
+                            <b>Todos</b>:                           
+                        </span>
+                        <span class="text">Coe Family</span>
+                    </li>
+                    <li class="message private">
+                        <span class="date">(09:21:45)</span>
+                        <span>
+                            <b>João</b>
+                            reservadamente para 
+                            <b>Maria</b>:                        
+                        </span>
+                        <span class="text">Passa o zap</span>
+                    </li>
+                </ul>
+            </main>
+            <footer>
+                <form method="post" id="send-message-form">
+                    <input type="text" placeholder="Escreva aqui...">
+                    <button type="submit">
+                        <ion-icon name="paper-plane-outline"></ion-icon>
+                    </button>
+                </form>
+            </footer>
+        </div>
     </div>
-
     <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
 </body>
 </html>
