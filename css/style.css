@@ -30,7 +30,7 @@ body {
 }
 @media (min-width: 715px) {
   .app .home {
-    max-width: 345px;
+    max-width: 415px;
     height: 95%;
     border-radius: 10px;
   }

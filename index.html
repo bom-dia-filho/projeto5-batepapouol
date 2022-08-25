@@ -10,7 +10,7 @@
 </head>
 <body>   
     <div class="app">
-        <div class="auth hide">
+        <div class="auth" id="auth">
             <img src="./assets/logo.png">
             <form method="post" id="form-auth">
                 <input type="text" placeholder="Digite seu nome">
@@ -19,7 +19,7 @@
                 </button>
             </form>
         </div>
-        <div class="home">
+        <div class="home hide" id="home">
             <header>
                 <img src="./assets/logo.png">
                 <ion-icon name="people"></ion-icon>
@@ -64,5 +64,9 @@
         </div>
     </div>
     <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./js/UOLBatePapoAPI.js"></script>
+    <script src="./js/auth.js"></script>
+    <script src="./js/index.js"></script>
 </body>
 </html>
