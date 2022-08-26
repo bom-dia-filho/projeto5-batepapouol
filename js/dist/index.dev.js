@@ -1,37 +1,47 @@
 "use strict";
 
-var formAuth = document.querySelector("#form-auth");
-var username = ""; //formAuth[0].value = "Jorge Ben" + Math.random().toFixed(3);
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
-formAuth[1].addEventListener("click", function (e) {
-  e.preventDefault();
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
 
-  if (isNameValid(formAuth[0].value)) {
-    loadingHTML();
-    tryConnect();
-  } else console.log("problema");
-}); //formAuth[1].click();
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
-function loadingHTML() {
-  document.querySelector("#auth form").classList.toggle("hide");
-  document.querySelector("#auth .spinning").classList.toggle("hide");
-}
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function tryConnect() {
-  authAPI(formAuth[0].value).then(function (response) {
-    connectChat();
-    return;
-  })["catch"](function (e) {
-    return tryConnect();
-  });
-}
+var username = "";
 
-function connectChat() {
-  closeAuth();
-  openUOLChat();
-  username = formAuth[0].value;
-  loadMessages();
-  keepConnection(username);
+function handleFormAuth() {
+  var _document$querySelect = document.querySelectorAll("#form-auth > *"),
+      _document$querySelect2 = _slicedToArray(_document$querySelect, 2),
+      input = _document$querySelect2[0],
+      button = _document$querySelect2[1];
+
+  function tryConnect() {
+    authAPI(input.value).then(function (response) {
+      connectChat();
+      return console.log("1");
+    })["catch"](function (e) {
+      console.log(e);
+    });
+  }
+
+  function connectChat() {
+    closeAuth();
+    openUOLChat();
+    username = input.value;
+    updateMessages();
+    keepConnectionAPI(username);
+    handleSendMessage();
+  }
+
+  button.onclick = function (e) {
+    e.preventDefault();
+
+    if (isNameValid(input.value)) {
+      toggleSpinner();
+      tryConnect();
+    } else console.log("problema");
+  };
 }
 
 function closeAuth() {
@@ -42,82 +52,116 @@ function openUOLChat() {
   document.querySelector("#home").classList.remove("hide");
 }
 
-function isNameValid(name) {
-  var requiriments = [function (name) {
-    return name.length >= 3;
-  }];
-  return requiriments.map(function (req) {
-    return req(name);
-  }).includes(false) ? false : true;
+function toggleSpinner() {
+  document.querySelector(".spinning").classList.toggle("hide");
+  document.querySelector("#form-auth").classList.toggle("hide");
 }
 
+handleFormAuth();
 var messages = document.querySelector("#home .messages");
 
-function privateMessageElement(info) {
-  return "\n        <li class=\"message private\">\n            <span class=\"date\">".concat(info.time, "</span>\n            <span>\n                <b>").concat(info.from, "</b>\n                reservadamente para \n                <b>").concat(info.to, "</b>:                        \n            </span>\n            <span class=\"text\">").concat(info.text, "</span>\n        </li>\n    ");
-}
-
-function messageElement(info) {
-  return "\n    <li class=\"message\">\n        <span class=\"date\">".concat(info.time, "</span>\n        <span>\n            <b>").concat(info.from, "</b>\n            para\n            <b>").concat(info.to, "</b>:                        \n        </span>\n        <span class=\"text\">").concat(info.text, "</span>\n    </li>\n");
-}
-
-function statusMessageElement(info) {
-  return "\n    <li class=\"message status\">\n        <span class=\"date\">".concat(info.time, "</span>\n        <span>\n            <b>").concat(info.from, "</b>                       \n        </span>\n        <span class=\"text\">").concat(info.text, "</span>\n    </li>\n");
-}
-
-function convertUTCBrasilia(time) {
-  //time_format = hh:mm:ss
-  time = time.replace("(", "").replace(")", "");
-  var k = 3;
-  time = time.split(":").map(function (t) {
-    return Number(t);
-  });
-  time[0] = time[0] - k < 0 ? 24 + (time[0] - k) : time[0] - k;
-  time = time.map(function (t) {
-    t = t.toString();
-    return t.length === 1 ? "0" + t : t;
-  });
-  if (time < 9) time = "0" + time.toString();
-  time = time.join(":");
-  return "(" + time + ")";
+function updateMessages() {
+  loadMessages();
+  var time = 3000;
+  setInterval(function () {
+    return loadMessages();
+  }, time);
 }
 
 function loadMessages() {
-  function get() {
-    getMessages().then(function (participants) {
-      messages.innerHTML = "";
-      participants.data.forEach(function (participant) {
-        participant.time = convertUTCBrasilia(participant.time);
-        messages.innerHTML += {
-          message: messageElement(participant),
-          status: statusMessageElement(participant),
-          private_message: participant.to === username ? privateMessageElement(participant) : ""
-        }[participant.type];
-      });
-      loadingHTML();
-      messages.querySelector("li:last-child").scrollIntoView();
-    })["catch"](function (e) {
-      return console.log(e);
+  function getMessages() {
+    getMessagesAPI().then(renderMessages)["catch"](errorGetMessages);
+  }
+
+  function clearMessages() {
+    messages.innerHTML = "";
+  }
+
+  function errorGetMessages(e) {
+    return console.log(e);
+  }
+
+  function renderMessages(messagesAPI) {
+    clearMessages();
+    var data = messagesAPI.data;
+    data.forEach(function (msg) {
+      var type = msg.type,
+          time = msg.time,
+          to = msg.to;
+      msg.time = convertGlobalUTCDate(time);
+      if (type === "status") msg.to = "";
+      var message = createMessage(msg); //if (type === "private_message") console.log(msg);
+
+      if (type === "private_message" && to !== username) {
+        console.log(msg);
+        message = "";
+      }
+
+      messages.innerHTML += message;
+    });
+    messages.querySelector("li:last-child").scrollIntoView();
+  }
+
+  getMessages();
+}
+
+function handleSendMessage() {
+  var _document$querySelect3 = document.querySelectorAll("#send-message-form > *"),
+      _document$querySelect4 = _slicedToArray(_document$querySelect3, 2),
+      input = _document$querySelect4[0],
+      button = _document$querySelect4[1];
+
+  var message;
+  var i = true;
+
+  function sendMessage() {
+    sendMessageAPI(message).then(sendMessageSuccess)["catch"](sendMessageError);
+  }
+
+  function noSpam() {
+    i = !i;
+  }
+
+  function clearInput() {
+    input.value = "";
+  }
+
+  function sendMessageSuccess() {
+    noSpam();
+    clearInput();
+    loadMessages();
+  }
+
+  function sendMessageError(e) {
+    window.location.reload();
+  }
+
+  function createMessage() {
+    return createMessageOBJAPI({
+      from: username,
+      to: "Todos",
+      text: input.value,
+      type: "message"
     });
   }
 
-  get();
-  var l = setInterval(function () {
-    get();
-  }, 3000);
-}
+  button.onclick = function (e) {
+    e.preventDefault();
 
-var formSendMessage = document.querySelector("#send-message-form");
-formSendMessage[1].addEventListener("click", function (e) {
-  e.preventDefault();
-  sendMessage(message({
-    from: username,
-    to: "Todos",
-    text: formSendMessage[0].value
-  })).then(function (response) {
-    formSendMessage[0].value = "";
-    loadMessages();
-  })["catch"](function (e) {
-    window.location.reload();
-  });
-});
+    if (i) {
+      noSpam();
+      message = createMessage();
+      sendMessage();
+    }
+  };
+
+  input.onfocus = function (e) {
+    input.onkeydown = function (e) {
+      if (e.keyCode === 13 && i) {
+        noSpam();
+        message = createMessage();
+        sendMessage();
+      }
+    };
+  };
+}

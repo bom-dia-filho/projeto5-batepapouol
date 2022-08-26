@@ -83,10 +83,10 @@ body {
 .app .home main .messages .message.status {
   background: #DCDCDC;
 }
-.app .home main .messages .message.private {
+.app .home main .messages .message.private_message {
   background: #FFDEDE;
 }
-.app .home main .messages .message .date {
+.app .home main .messages .message .time {
   color: #AAAAAA;
 }
 .app .home footer {
