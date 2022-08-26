@@ -11,13 +11,17 @@
 <body>   
     <div class="app">
         <div class="auth" id="auth">
-            <img src="./assets/logo.png">
+            <img class="logo" src="./assets/logo.png">
             <form method="post" id="form-auth">
                 <input type="text" placeholder="Digite seu nome">
                 <button type="submit">
                     Entrar
                 </button>
             </form>
+            <div class="spinning hide">
+                <div class="lds-dual-ring"></div>
+                <span>Carregando...</span>
+            </div>
         </div>
         <div class="home hide" id="home">
             <header>
@@ -26,31 +30,7 @@
             </header>
             <main>
                 <ul class="messages" id="messages">
-                    <li class="message status">
-                        <span class="date">(09:21:45)</span>
-                        <span>
-                            <b>João</b>                            
-                        </span>
-                        <span class="text">entra na sala...</span>
-                    </li>
-                    <li class="message">
-                        <span class="date">(09:21:45)</span>
-                        <span>
-                            <b>João</b>
-                            para
-                            <b>Todos</b>:                           
-                        </span>
-                        <span class="text">Coe Family</span>
-                    </li>
-                    <li class="message private">
-                        <span class="date">(09:21:45)</span>
-                        <span>
-                            <b>João</b>
-                            reservadamente para 
-                            <b>Maria</b>:                        
-                        </span>
-                        <span class="text">Passa o zap</span>
-                    </li>
+                    
                 </ul>
             </main>
             <footer>
@@ -66,7 +46,6 @@
     <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="./js/UOLBatePapoAPI.js"></script>
-    <script src="./js/auth.js"></script>
     <script src="./js/index.js"></script>
 </body>
 </html>

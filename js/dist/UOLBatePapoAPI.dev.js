@@ -6,17 +6,21 @@ function getParticipants() {
   return axios.get(API_URL + "participants");
 }
 
-function auth() {
+function authAPI(name) {
   return axios.post(API_URL + "participants", {
-    name: "Jorge Ben JooJ"
+    name: name
   });
 }
 
-function keepConnection() {
-  return axios.post(API_URL + "status", {});
+function keepConnection(name) {
+  setInterval(function () {
+    axios.post(API_URL + "status", {
+      name: name
+    });
+  }, 3000);
 }
 
-function getMessage() {
+function getMessages() {
   return axios.get(API_URL + "messages");
 }
 
@@ -43,7 +47,7 @@ function statusMessage(msgConfig) {
     from: msgConfig.from,
     to: "Todos",
     text: msgConfig.text,
-    type: "private_message",
+    type: "status",
     time: timeNow()
   };
 }

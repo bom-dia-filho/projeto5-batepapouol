@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap")
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap')
 
 * 
   box-sizing: border-box
@@ -119,12 +119,52 @@ body
         display: grid
         background: #F3F3F3
         grid-template-rows: 1fr auto 1fr auto 5fr
+        grid-template-columns: 1fr !important
         align-content: center
         justify-items: center 
-        img
-            grid-row: 2/3
+        .logo
             height: 100%
             max-height: 92px
+            grid-row: 2/3
+        .spinning
+            grid-column: 1/2
+            grid-row: 4/5 !important
+            position: relative
+            display: flex
+            flex-direction: column
+            gap: 30px
+            align-items: center
+            .lds-dual-ring 
+                display: inline-block
+                width: 80px
+                height: 80px
+                
+                &:after 
+                    content: " "
+                    display: block
+                    width: 64px
+                    height: 64px
+                    margin: 8px
+                    border-radius: 50%
+                    border: 6px solid #A0321E
+                    border-color: #A0321E transparent #CE8F2B transparent
+                    animation: lds-dual-ring 1.2s linear infinite
+                
+                @keyframes lds-dual-ring 
+                    0% 
+                        transform: rotate(0deg)
+                    
+                    100% 
+                        transform: rotate(360deg)
+                
+
+            span
+                font-size: 18px
+                text-align: center
+                font-weight: bold
+                color: #333
+            
+            
         form
             grid-row: 4/5
             display: flex

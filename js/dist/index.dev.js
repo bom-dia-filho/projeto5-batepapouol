@@ -1,59 +1,123 @@
 "use strict";
 
-var API_URL = "https://mock-api.driven.com.br/api/v6/uol/";
+var formAuth = document.querySelector("#form-auth");
+var username = ""; //formAuth[0].value = "Jorge Ben" + Math.random().toFixed(3);
 
-function getParticipants() {
-  return axios.get(API_URL + "participants");
+formAuth[1].addEventListener("click", function (e) {
+  e.preventDefault();
+
+  if (isNameValid(formAuth[0].value)) {
+    loadingHTML();
+    tryConnect();
+  } else console.log("problema");
+}); //formAuth[1].click();
+
+function loadingHTML() {
+  document.querySelector("#auth form").classList.toggle("hide");
+  document.querySelector("#auth .spinning").classList.toggle("hide");
 }
 
-function auth() {
-  return axios.post(API_URL + "participants", {
-    name: "Jorge Ben JooJ"
+function tryConnect() {
+  authAPI(formAuth[0].value).then(function (response) {
+    connectChat();
+    return;
+  })["catch"](function (e) {
+    return tryConnect();
   });
 }
 
-function keepConnection() {
-  return axios.post(API_URL + "status", {});
+function connectChat() {
+  closeAuth();
+  openUOLChat();
+  username = formAuth[0].value;
+  loadMessages();
+  keepConnection(username);
 }
 
-function getMessage() {
-  return axios.get(API_URL + "messages");
+function closeAuth() {
+  document.querySelector("#auth").classList.add("hide");
 }
 
-function sendMessage(msgConfig) {
-  return axios.post(API_URL + "messages", msgConfig);
+function openUOLChat() {
+  document.querySelector("#home").classList.remove("hide");
 }
 
-function timeNow() {
-  return new Date().toLocaleTimeString().split(" ")[0];
+function isNameValid(name) {
+  var requiriments = [function (name) {
+    return name.length >= 3;
+  }];
+  return requiriments.map(function (req) {
+    return req(name);
+  }).includes(false) ? false : true;
 }
 
-function privateMessage(msgConfig) {
-  return {
-    from: msgConfig.from,
-    to: msgConfig.to,
-    text: msgConfig.text,
-    type: "private_message",
-    time: timeNow()
-  };
+var messages = document.querySelector("#home .messages");
+
+function privateMessageElement(info) {
+  return "\n        <li class=\"message private\">\n            <span class=\"date\">".concat(info.time, "</span>\n            <span>\n                <b>").concat(info.from, "</b>\n                reservadamente para \n                <b>").concat(info.to, "</b>:                        \n            </span>\n            <span class=\"text\">").concat(info.text, "</span>\n        </li>\n    ");
 }
 
-function statusMessage(msgConfig) {
-  return {
-    from: msgConfig.from,
+function messageElement(info) {
+  return "\n    <li class=\"message\">\n        <span class=\"date\">".concat(info.time, "</span>\n        <span>\n            <b>").concat(info.from, "</b>\n            para\n            <b>").concat(info.to, "</b>:                        \n        </span>\n        <span class=\"text\">").concat(info.text, "</span>\n    </li>\n");
+}
+
+function statusMessageElement(info) {
+  return "\n    <li class=\"message status\">\n        <span class=\"date\">".concat(info.time, "</span>\n        <span>\n            <b>").concat(info.from, "</b>                       \n        </span>\n        <span class=\"text\">").concat(info.text, "</span>\n    </li>\n");
+}
+
+function convertUTCBrasilia(time) {
+  //time_format = hh:mm:ss
+  time = time.replace("(", "").replace(")", "");
+  var k = 3;
+  time = time.split(":").map(function (t) {
+    return Number(t);
+  });
+  time[0] = time[0] - k < 0 ? 24 + (time[0] - k) : time[0] - k;
+  time = time.map(function (t) {
+    t = t.toString();
+    return t.length === 1 ? "0" + t : t;
+  });
+  if (time < 9) time = "0" + time.toString();
+  time = time.join(":");
+  return "(" + time + ")";
+}
+
+function loadMessages() {
+  function get() {
+    getMessages().then(function (participants) {
+      messages.innerHTML = "";
+      participants.data.forEach(function (participant) {
+        participant.time = convertUTCBrasilia(participant.time);
+        messages.innerHTML += {
+          message: messageElement(participant),
+          status: statusMessageElement(participant),
+          private_message: participant.to === username ? privateMessageElement(participant) : ""
+        }[participant.type];
+      });
+      loadingHTML();
+      messages.querySelector("li:last-child").scrollIntoView();
+    })["catch"](function (e) {
+      return console.log(e);
+    });
+  }
+
+  get();
+  var l = setInterval(function () {
+    get();
+  }, 3000);
+}
+
+var formSendMessage = document.querySelector("#send-message-form");
+formSendMessage[1].addEventListener("click", function (e) {
+  e.preventDefault();
+  sendMessage(message({
+    from: username,
     to: "Todos",
-    text: msgConfig.text,
-    type: "private_message",
-    time: timeNow()
-  };
-}
-
-function message(msgConfig) {
-  return {
-    from: msgConfig.from,
-    to: msgConfig.to,
-    text: msgConfig.text,
-    type: "message",
-    time: timeNow()
-  };
-}
+    text: formSendMessage[0].value
+  })).then(function (response) {
+    formSendMessage[0].value = "";
+    loadMessages();
+  })["catch"](function (e) {
+    window.location.reload();
+  });
+});
