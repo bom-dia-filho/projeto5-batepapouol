@@ -1,12 +1,16 @@
-let username = "";
+let username = "Jorge Ben" + Math.random().toFixed(3);
+let to = "Todos";
+let typeMessage = "message";
+let participants = [];
 
 function handleFormAuth() {
   const [input, button] = document.querySelectorAll("#form-auth > *");
 
-  function tryConnect() {
-    authAPI(input.value)
+  function tryConnect(id) {
+    authAPI(username)
       .then((response) => {
         connectChat();
+        clearInterval(id);
         return console.log("1");
       })
       .catch((e) => {
@@ -17,19 +21,21 @@ function handleFormAuth() {
   function connectChat() {
     closeAuth();
     openUOLChat();
-    username = input.value;
-    updateMessages();
+    //username = input.value;
+    updateUOLChat();
     keepConnectionAPI(username);
     handleSendMessage();
   }
 
   button.onclick = (e) => {
     e.preventDefault();
-    if (isNameValid(input.value)) {
+    if (isNameValid("ssss")) {
       toggleSpinner();
-      tryConnect();
+      const id = setInterval(() => tryConnect(id), 1000);
     } else console.log("problema");
   };
+
+  button.click();
 }
 
 function closeAuth() {
@@ -49,10 +55,15 @@ handleFormAuth();
 
 const messages = document.querySelector("#home .messages");
 
-function updateMessages() {
+function updateUOLChat() {
   loadMessages();
   const time = 3000;
-  setInterval(() => loadMessages(), time);
+  setInterval(() => {
+    loadMessages();
+    getParticipantsAPI().then((res) => {
+      participants = [{ name: "Todos" }].concat(res.data);
+    });
+  }, time);
 }
 
 function loadMessages() {
@@ -71,14 +82,14 @@ function loadMessages() {
   function renderMessages(messagesAPI) {
     clearMessages();
     const { data } = messagesAPI;
+
     data.forEach((msg) => {
-      const { type, time, to } = msg;
+      const { type, time, to, from } = msg;
       msg.time = convertGlobalUTCDate(time);
       if (type === "status") msg.to = "";
       let message = createMessage(msg);
       //if (type === "private_message") console.log(msg);
-      if (type === "private_message" && to !== username) {
-        console.log(msg);
+      if (type === "private_message" && to !== username && from !== username) {
         message = "";
       }
 
@@ -123,9 +134,9 @@ function handleSendMessage() {
   function createMessage() {
     return createMessageOBJAPI({
       from: username,
-      to: "Todos",
+      to: to,
       text: input.value,
-      type: "message",
+      type: typeMessage,
     });
   }
 
@@ -148,3 +159,92 @@ function handleSendMessage() {
     };
   };
 }
+
+function handleMenu() {
+  const bg = document.querySelector(".menu .bg");
+  const menuBtn = document.querySelector("#home header ion-icon");
+
+  function toggleMenu() {
+    document.querySelector(".menu").classList.toggle("hide");
+  }
+
+  function item(name, hide = false) {
+    return `
+      <li data-name='${name}'>
+          <ion-icon name="${
+            name === "Todos" ? "people" : "person-circle"
+          }"></ion-icon>
+          ${name}
+          <ion-icon class="check ${
+            hide ? "" : "hide"
+          }" name="checkmark-outline"></ion-icon>
+      </li>
+    `;
+  }
+
+  function renderContacts() {
+    const contact = document.querySelector(".menu .bar > .contact");
+
+    contact.innerHTML = "";
+
+    participants.forEach((d) => {
+      contact.innerHTML += item(d.name, d.name === to);
+      //console.log(d.name, to);
+    });
+    handleVisibility();
+    handleContact();
+  }
+
+  function handleContact() {
+    const contacts = document.querySelectorAll(".menu .bar > .contact li");
+
+    function addHide() {
+      contacts.forEach((c) => {
+        console.log(c);
+        c.querySelector(".check").classList.add("hide");
+      });
+    }
+
+    contacts.forEach((c) => {
+      c.onclick = (e) => {
+        addHide();
+        c.querySelector(".check").classList.remove("hide");
+        to = c.getAttribute("data-name");
+        console.log(to);
+      };
+    });
+  }
+
+  function handleVisibility() {
+    const visibilitiesItem = document.querySelectorAll(
+      ".menu .bar > .visibility li"
+    );
+
+    function addHide() {
+      visibilitiesItem.forEach((i) => {
+        i.querySelector(".check").classList.add("hide");
+      });
+    }
+
+    visibilitiesItem.forEach((item) => {
+      item.onclick = (e) => {
+        addHide();
+        item.querySelector(".check").classList.remove("hide");
+        item.getAttribute("0")
+          ? (typeMessage = "message")
+          : (typeMessage = "private_message");
+      };
+    });
+  }
+
+  menuBtn.onclick = (e) => {
+    toggleMenu();
+    renderContacts();
+  };
+
+  bg.onclick = (e) => {
+    toggleMenu();
+  };
+}
+
+handleMenu();

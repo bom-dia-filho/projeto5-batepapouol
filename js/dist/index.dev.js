@@ -8,7 +8,10 @@ function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) ||
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-var username = "";
+var username = "Jorge Ben" + Math.random().toFixed(3);
+var to = "Todos";
+var typeMessage = "message";
+var participants = [];
 
 function handleFormAuth() {
   var _document$querySelect = document.querySelectorAll("#form-auth > *"),
@@ -16,9 +19,10 @@ function handleFormAuth() {
       input = _document$querySelect2[0],
       button = _document$querySelect2[1];
 
-  function tryConnect() {
-    authAPI(input.value).then(function (response) {
+  function tryConnect(id) {
+    authAPI(username).then(function (response) {
       connectChat();
+      clearInterval(id);
       return console.log("1");
     })["catch"](function (e) {
       console.log(e);
@@ -27,9 +31,9 @@ function handleFormAuth() {
 
   function connectChat() {
     closeAuth();
-    openUOLChat();
-    username = input.value;
-    updateMessages();
+    openUOLChat(); //username = input.value;
+
+    updateUOLChat();
     keepConnectionAPI(username);
     handleSendMessage();
   }
@@ -37,11 +41,15 @@ function handleFormAuth() {
   button.onclick = function (e) {
     e.preventDefault();
 
-    if (isNameValid(input.value)) {
+    if (isNameValid("ssss")) {
       toggleSpinner();
-      tryConnect();
+      var id = setInterval(function () {
+        return tryConnect(id);
+      }, 1000);
     } else console.log("problema");
   };
+
+  button.click();
 }
 
 function closeAuth() {
@@ -60,11 +68,16 @@ function toggleSpinner() {
 handleFormAuth();
 var messages = document.querySelector("#home .messages");
 
-function updateMessages() {
+function updateUOLChat() {
   loadMessages();
   var time = 3000;
   setInterval(function () {
-    return loadMessages();
+    loadMessages();
+    getParticipantsAPI().then(function (res) {
+      participants = [{
+        name: "Todos"
+      }].concat(res.data);
+    });
   }, time);
 }
 
@@ -87,13 +100,13 @@ function loadMessages() {
     data.forEach(function (msg) {
       var type = msg.type,
           time = msg.time,
-          to = msg.to;
+          to = msg.to,
+          from = msg.from;
       msg.time = convertGlobalUTCDate(time);
       if (type === "status") msg.to = "";
       var message = createMessage(msg); //if (type === "private_message") console.log(msg);
 
-      if (type === "private_message" && to !== username) {
-        console.log(msg);
+      if (type === "private_message" && to !== username && from !== username) {
         message = "";
       }
 
@@ -139,9 +152,9 @@ function handleSendMessage() {
   function createMessage() {
     return createMessageOBJAPI({
       from: username,
-      to: "Todos",
+      to: to,
       text: input.value,
-      type: "message"
+      type: typeMessage
     });
   }
 
@@ -165,3 +178,76 @@ function handleSendMessage() {
     };
   };
 }
+
+function handleMenu() {
+  var bg = document.querySelector(".menu .bg");
+  var menuBtn = document.querySelector("#home header ion-icon");
+
+  function toggleMenu() {
+    document.querySelector(".menu").classList.toggle("hide");
+  }
+
+  function item(name) {
+    var hide = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    return "\n      <li data-name='".concat(name, "'>\n          <ion-icon name=\"").concat(name === "Todos" ? "people" : "person-circle", "\"></ion-icon>\n          ").concat(name, "\n          <ion-icon class=\"check ").concat(hide ? "" : "hide", "\" name=\"checkmark-outline\"></ion-icon>\n      </li>\n    ");
+  }
+
+  function renderContacts() {
+    var contact = document.querySelector(".menu .bar > .contact");
+    contact.innerHTML = "";
+    participants.forEach(function (d) {
+      contact.innerHTML += item(d.name, d.name === to); //console.log(d.name, to);
+    });
+    handleVisibility();
+    handleContact();
+  }
+
+  function handleContact() {
+    var contacts = document.querySelectorAll(".menu .bar > .contact li");
+
+    function addHide() {
+      contacts.forEach(function (c) {
+        console.log(c);
+        c.querySelector(".check").classList.add("hide");
+      });
+    }
+
+    contacts.forEach(function (c) {
+      c.onclick = function (e) {
+        addHide();
+        c.querySelector(".check").classList.remove("hide");
+        to = c.getAttribute("data-name");
+        console.log(to);
+      };
+    });
+  }
+
+  function handleVisibility() {
+    var visibilitiesItem = document.querySelectorAll(".menu .bar > .visibility li");
+
+    function addHide() {
+      visibilitiesItem.forEach(function (i) {
+        i.querySelector(".check").classList.add("hide");
+      });
+    }
+
+    visibilitiesItem.forEach(function (item) {
+      item.onclick = function (e) {
+        addHide();
+        item.querySelector(".check").classList.remove("hide");
+        item.getAttribute("0") ? typeMessage = "message" : typeMessage = "private_message";
+      };
+    });
+  }
+
+  menuBtn.onclick = function (e) {
+    toggleMenu();
+    renderContacts();
+  };
+
+  bg.onclick = function (e) {
+    toggleMenu();
+  };
+}
+
+handleMenu();
