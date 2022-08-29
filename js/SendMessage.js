@@ -8,6 +8,7 @@ const sendMessage = (input, fn) => {
     MESSAGE_CONFIG.type = "message";
   UOLChatAPI.sendMessage(MESSAGE_CONFIG)
     .then((res) => {
+      console.log(MESSAGE_CONFIG);
       fn();
     })
     .catch((e) => {
@@ -20,7 +21,7 @@ const inputSendMessageHandler = (fn) => {
   const input = document.querySelector("#form-send-message > input");
 
   input.onkeydown = (e) => {
-    if (e.keyCode === "13" && trim(MESSAGE_CONFIG.text).length > 0) {
+    if (e.keyCode === "13") {
       sendMessage(input, fn);
     }
   };
