@@ -6,9 +6,14 @@ const sendMessage = (input, fn) => {
     MESSAGE_CONFIG.type === "private_message"
   )
     MESSAGE_CONFIG.type = "message";
-  UOLChatAPI.sendMessage(MESSAGE_CONFIG).then((res) => {
-    fn();
-  });
+  UOLChatAPI.sendMessage(MESSAGE_CONFIG)
+    .then((res) => {
+      fn();
+    })
+    .catch((e) => {
+      console.log(MESSAGE_CONFIG);
+      window.location.reload();
+    });
 };
 
 const inputSendMessageHandler = (fn) => {

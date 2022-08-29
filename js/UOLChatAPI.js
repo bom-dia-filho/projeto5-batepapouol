@@ -15,7 +15,12 @@ const UOLChatAPI = {
 
   keepConnection: (name) => {
     setInterval(() => {
-      axios.post(API_URL + "status", name);
+      axios
+        .post(API_URL + "status", name)
+        .then()
+        .catch((e) => {
+          console.log("O problema é aqui em keep connection");
+        });
     }, 3000);
   },
 

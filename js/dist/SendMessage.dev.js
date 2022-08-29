@@ -14,6 +14,9 @@ var sendMessage = function sendMessage(input, fn) {
   if (MESSAGE_CONFIG.to === "Todos" && MESSAGE_CONFIG.type === "private_message") MESSAGE_CONFIG.type = "message";
   UOLChatAPI.sendMessage(MESSAGE_CONFIG).then(function (res) {
     fn();
+  })["catch"](function (e) {
+    console.log(MESSAGE_CONFIG);
+    window.location.reload();
   });
 };
 

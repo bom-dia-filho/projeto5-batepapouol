@@ -1,6 +1,6 @@
 const contactElement = (name, hide = false) => {
   return `
-        <li data-name='${name}'>
+        <li data-identifier='${name}'>
             <ion-icon name="${
               name === "Todos" ? "people" : "person-circle"
             }"></ion-icon>
@@ -14,7 +14,10 @@ const contactElement = (name, hide = false) => {
 
 const renderParticipants = (contact) => {
   PARTICIPANTS.forEach((participant) => {
-    contact.innerHTML += contactElement(participant.name);
+    contact.innerHTML += contactElement(
+      participant.name,
+      participant.name === MESSAGE_CONFIG.to
+    );
   });
 };
 
@@ -28,7 +31,7 @@ const chooseParticipant = (participantElements) => {
   participantElements.forEach((element) => {
     element.onclick = (e) => {
       hideCheckElements(participantElements);
-      MESSAGE_CONFIG.to = element.getAttribute("data-name");
+      MESSAGE_CONFIG.to = element.getAttribute("data-identifier");
       element.querySelector(".check").classList.remove("hide");
     };
   });
@@ -49,12 +52,11 @@ const chooseVisibility = () => {
   });
 };
 
-const getParticipants = (fn) => {
+const getParticipants = () => {
   UOLChatAPI.getParticipants().then((res) => {
     PARTICIPANTS = [{ name: "Todos" }]
       .concat(res.data)
       .filter((data) => data.name !== MESSAGE_CONFIG.from);
-    fn(res.data);
   });
 };
 
@@ -62,14 +64,11 @@ const optionsHandler = () => {
   const contact = document.querySelector(
     ".options-container .options .contact ul"
   );
+  contact.innerHTML = "";
+  renderParticipants(contact);
 
-  getParticipants((data) => {
-    contact.innerHTML = "";
-    renderParticipants(contact, data.name !== MESSAGE_CONFIG.to);
-
-    chooseParticipant(contact.querySelectorAll("li"));
-    chooseVisibility();
-  });
+  chooseParticipant(contact.querySelectorAll("li"));
+  chooseVisibility();
 };
 
 const toggleOptions = () => {
@@ -78,6 +77,7 @@ const toggleOptions = () => {
 
   btn.onclick = (e) => {
     document.querySelector(".options-container").classList.toggle("hide");
+    optionsHandler();
   };
 
   background.onclick = (e) => {

@@ -7,7 +7,6 @@ var MESSAGE_CONFIG = {
   text: ""
 };
 var PARTICIPANTS = [];
-MESSAGE_CONFIG.from = "userfff" + Math.random().toFixed(3);
 
 var updateEachThreeSeconds = function updateEachThreeSeconds(fn) {
   return setInterval(function () {
@@ -16,14 +15,16 @@ var updateEachThreeSeconds = function updateEachThreeSeconds(fn) {
 };
 
 var setupChat = function setupChat(fn) {
+  getParticipants();
   updateMessages(fn);
   updateEachThreeSeconds(updateMessages);
-  optionsHandler();
   inputSendMessageHandler(updateMessages);
   buttonSendMessageHandler(updateMessages);
+  updateEachThreeSeconds(getParticipants);
   toggleOptions();
   updateEachThreeSeconds(function () {
-    return UOLChatAPI.keepConnection({
+    //console.log(MESSAGE_CONFIG.from);
+    UOLChatAPI.keepConnection({
       name: MESSAGE_CONFIG.from
     });
   });
@@ -31,7 +32,6 @@ var setupChat = function setupChat(fn) {
 
 signHandler(function () {
   setupChat(function () {
-    document.querySelector("#home").classList.toggle("hide");
     document.querySelector("#sign").classList.toggle("hide");
   });
 });

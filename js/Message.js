@@ -28,11 +28,35 @@ const filterMessages = (msgs, username) => {
   });
 };
 
+const getLocalUTC = () =>
+  Math.abs(new Date().getHours() - new Date().getUTCHours());
+
+const convertGlobalDataToLocalData = (time) => {
+  time = time.replace("(", "").replace(")", "");
+  const UTC_LOCAL = getLocalUTC();
+
+  time = time.split(":").map((t) => Number(t));
+  time[0] =
+    time[0] - UTC_LOCAL < 0 ? 12 + (time[0] - UTC_LOCAL) : time[0] - UTC_LOCAL;
+  time = time.map((t) => {
+    t = t.toString();
+    return t.length === 1 ? "0" + t : t;
+  });
+
+  if (time[0] === "00") time[0] = "12";
+
+  time = time.join(":");
+  return "(" + time + ")";
+};
+
 const updateMessages = (fn = () => {}) => {
   const messagesElement = document.querySelector("#home main .messages");
 
   UOLChatAPI.getMessages().then((res) => {
-    const messages = filterMessages(res.data, MESSAGE_CONFIG.from);
+    const messages = filterMessages(res.data, MESSAGE_CONFIG.from).map((el) => {
+      el.time = convertGlobalDataToLocalData(el.time);
+      return el;
+    });
     messagesElement.innerHTML = "";
 
     messages.forEach((msg) => {
@@ -40,9 +64,6 @@ const updateMessages = (fn = () => {}) => {
     });
 
     messagesElement.querySelector("li:last-child").scrollIntoView();
-    const id = setTimeout(() => {
-      fn();
-      clearTimeout(id);
-    }, 500);
+    fn();
   });
 };

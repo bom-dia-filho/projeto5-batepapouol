@@ -7,25 +7,24 @@ const MESSAGE_CONFIG = {
 
 let PARTICIPANTS = [];
 
-MESSAGE_CONFIG.from = "userfff" + Math.random().toFixed(3);
-
 const updateEachThreeSeconds = (fn) => setInterval(() => fn(), 3 * 1000);
 
 const setupChat = (fn) => {
+  getParticipants();
   updateMessages(fn);
   updateEachThreeSeconds(updateMessages);
-  optionsHandler();
   inputSendMessageHandler(updateMessages);
   buttonSendMessageHandler(updateMessages);
+  updateEachThreeSeconds(getParticipants);
   toggleOptions();
-  updateEachThreeSeconds(() =>
-    UOLChatAPI.keepConnection({ name: MESSAGE_CONFIG.from })
-  );
+  updateEachThreeSeconds(() => {
+    //console.log(MESSAGE_CONFIG.from);
+    UOLChatAPI.keepConnection({ name: MESSAGE_CONFIG.from });
+  });
 };
 
 signHandler(() => {
   setupChat(() => {
-    document.querySelector("#home").classList.toggle("hide");
     document.querySelector("#sign").classList.toggle("hide");
   });
 });

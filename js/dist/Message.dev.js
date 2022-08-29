@@ -28,19 +28,39 @@ var filterMessages = function filterMessages(msgs, username) {
   });
 };
 
+var getLocalUTC = function getLocalUTC() {
+  return Math.abs(new Date().getHours() - new Date().getUTCHours());
+};
+
+var convertGlobalDataToLocalData = function convertGlobalDataToLocalData(time) {
+  time = time.replace("(", "").replace(")", "");
+  var UTC_LOCAL = getLocalUTC();
+  time = time.split(":").map(function (t) {
+    return Number(t);
+  });
+  time[0] = time[0] - UTC_LOCAL < 0 ? 12 + (time[0] - UTC_LOCAL) : time[0] - UTC_LOCAL;
+  time = time.map(function (t) {
+    t = t.toString();
+    return t.length === 1 ? "0" + t : t;
+  });
+  if (time[0] === "00") time[0] = "12";
+  time = time.join(":");
+  return "(" + time + ")";
+};
+
 var updateMessages = function updateMessages() {
   var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
   var messagesElement = document.querySelector("#home main .messages");
   UOLChatAPI.getMessages().then(function (res) {
-    var messages = filterMessages(res.data, MESSAGE_CONFIG.from);
+    var messages = filterMessages(res.data, MESSAGE_CONFIG.from).map(function (el) {
+      el.time = convertGlobalDataToLocalData(el.time);
+      return el;
+    });
     messagesElement.innerHTML = "";
     messages.forEach(function (msg) {
       messagesElement.innerHTML += messageElement(msg);
     });
     messagesElement.querySelector("li:last-child").scrollIntoView();
-    var id = setTimeout(function () {
-      fn();
-      clearTimeout(id);
-    }, 500);
+    fn();
   });
 };
