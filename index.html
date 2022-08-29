@@ -1,75 +1,85 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PROJETO #5 - CHAT UOL</title>
-    <link rel="stylesheet" href="css/reset.css">
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>   
-    <div class="app">
-        <div class="auth" id="auth">
-            <img class="logo" src="./assets/logo.png">
-            <form method="post" id="form-auth">
-                <input type="text" placeholder="Digite seu nome">
-                <button type="submit">
-                    Entrar
-                </button>
-            </form>
-            <div class="spinning hide">
-                <div class="lds-dual-ring"></div>
-                <span>Carregando...</span>
-            </div>
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="sign">
+        <div class="logo">
+          <img src="./assets/logo.png" alt="Logo" />
         </div>
-        <div class="home hide" id="home">
-            <header>
-                <img src="./assets/logo.png">
-                <ion-icon name="people"></ion-icon>
-            </header>
-            <main>
-                <ul class="messages" id="messages">
-                    
-                </ul>
-            </main>
-            <footer>
-                <form method="post" id="send-message-form">
-                    <input type="text" placeholder="Escreva aqui...">
-                    <button type="submit">
-                        <ion-icon name="paper-plane-outline"></ion-icon>
-                    </button>
-                </form>
-            </footer>
-            <div class="menu hide">
-                <div class="bg"></div>
-                <div class="bar">
-                    <h2>Escolha um contato para enviar mensagem:</h2>
-                    <ul class="contact">
-
-                    </ul>
-                    <h2>Escolha a visibilidade:</h2>
-                    <ul class="visibility">
-                        <li data-visibility="0">
-                            <ion-icon name="lock-open"></ion-icon>
-                            Público
-                            <ion-icon class="check" name="checkmark-outline"></ion-icon>
-                        </li>
-                        <li data-visibility="1">
-                            <ion-icon name="lock-closed"></ion-icon>
-                            Reservadamente
-                            <ion-icon class="check hide" name="checkmark-outline"></ion-icon>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <form action="/" id="form-sign">
+          <input placeholder="Digite seu nome" type="text" />
+          <button>Entrar</button>
+        </form>
+        <div class="spinning hide">
+          <div class="lds-dual-ring"></div>
+          <span>Carregando...</span>
         </div>
+      </div>
+      <div class="hide" id="home">
+        <div class="options-container hide">
+          <div class="bg"></div>
+          <div class="options">
+            <button class="close-btn hide">
+              <ion-icon name="close-circle-outline"></ion-icon>
+            </button>
+            <section class="contact">
+              <h2>Escolha um contato para enviar mensagem:</h2>
+              <ul></ul>
+            </section>
+            <section class="visibility">
+              <h2>Escolha a visibilidade:</h2>
+              <ul>
+                <li data-type="0">
+                  <ion-icon name="lock-open"></ion-icon>
+                  Público
+                  <ion-icon class="check" name="checkmark-outline"></ion-icon>
+                </li>
+                <li data-type="1">
+                  <ion-icon name="lock-closed"></ion-icon>
+                  Reservadamente
+                  <ion-icon
+                    class="check hide"
+                    name="checkmark-outline"
+                  ></ion-icon>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+        <header class="top-header">
+          <div class="logo">
+            <img src="./assets/logo.png" alt="Logo" />
+          </div>
+          <button class="side-bar-btn">
+            <ion-icon name="people"></ion-icon>
+          </button>
+        </header>
+        <main>
+          <ul class="messages"></ul>
+        </main>
+        <form id="form-send-message">
+          <input type="text" placeholder="Escreva aqui..." />
+          <button type="submit">
+            <ion-icon name="paper-plane-outline"></ion-icon>
+          </button>
+        </form>
+      </div>
     </div>
     <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="./js/UOLBatePapoAPI.js"></script>
-    <script src="./js/messageElements.js"></script>
-    <script src="./js/util.js"></script>
-    <script src="./js/index.js"></script>
-</body>
+    <script src="./js/UOLChatAPI.js"></script>
+    <script src="./js/Options.js"></script>
+    <script src="./js/Sign.js"></script>
+    <script src="./js/Message.js"></script>
+    <script src="./js/SendMessage.js"></script>
+    <script src="./js/Chat.js"></script>
+  </body>
 </html>
