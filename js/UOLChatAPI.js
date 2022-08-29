@@ -14,14 +14,16 @@ const UOLChatAPI = {
     }),
 
   keepConnection: (name) => {
+    let i = 0;
     setInterval(() => {
+      console.log(i++);
       axios
         .post(API_URL + "status", name)
-        .then()
+        .then(() => {})
         .catch((e) => {
           console.log("O problema é aqui em keep connection");
         });
-    }, 3000);
+    }, 5000);
   },
 
   sign: (name) => {

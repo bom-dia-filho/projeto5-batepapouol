@@ -7,20 +7,17 @@ const MESSAGE_CONFIG = {
 
 let PARTICIPANTS = [];
 
-const updateEachThreeSeconds = (fn) => setInterval(() => fn(), 3 * 1000);
+const updateEachTime = (fn, time = 3000) => setInterval(() => fn(), time);
 
 const setupChat = (fn) => {
+  UOLChatAPI.keepConnection({ name: MESSAGE_CONFIG.from });
   getParticipants();
   updateMessages(fn);
-  updateEachThreeSeconds(updateMessages);
+  updateEachTime(updateMessages);
   inputSendMessageHandler(updateMessages);
   buttonSendMessageHandler(updateMessages);
-  updateEachThreeSeconds(getParticipants);
+  updateEachTime(getParticipants);
   toggleOptions();
-  updateEachThreeSeconds(() => {
-    //console.log(MESSAGE_CONFIG.from);
-    UOLChatAPI.keepConnection({ name: MESSAGE_CONFIG.from });
-  });
 };
 
 signHandler(() => {
