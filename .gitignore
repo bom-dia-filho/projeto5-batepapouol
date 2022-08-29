@@ -1,5 +1,8 @@
 .vscode
 .dist
+dist
+/dist
+./js/dist
 node_modules
 gulpfile.js
 package.json
